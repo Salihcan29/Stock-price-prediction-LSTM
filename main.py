@@ -5,6 +5,9 @@ Created on Fri Oct 30 20:46:52 2020
 @author: Salihcan
 """
 
+print("If you take an module error(s), you should install the modules indicated in the error.")
+print("Anaconda prompt> \"pip install module_name\"")
+
 from pandas_datareader import data as pdr
 
 import numpy as np
@@ -14,7 +17,10 @@ from keras.models import Sequential
 from keras.layers import Dense, LSTM
 
 from sklearn.preprocessing import MinMaxScaler
-from keras.callbacks import History 
+from keras.callbacks import History
+import warnings
+
+warnings.filterwarnings('ignore')
 
 def get_test(n):
     dataset = pdr.get_data_yahoo("PETKM.IS", start="2019-01-01", end="2020-11-07")
@@ -100,6 +106,7 @@ def take_data(n):
         y_trains.append(y_train)
         np_df_scaleds.append(np_df_scaled)
         scalers.append(scaler)
+    print("Data succesfully created.")
     return stock_names, x_trains, y_trains, np_df_scaleds, scalers
 
 def return_model(x_trains,y_trains,n,epochs):
@@ -120,8 +127,7 @@ def return_model(x_trains,y_trains,n,epochs):
             model.fit(x_train,y_trains[index],epochs=1,batch_size=32,callbacks=[history],verbose=0,validation_data=(x_test,y_test))
             train_loss.append(history.history["loss"])
             val_loss.append(history.history["val_loss"])
-        print("Train & Validation loss: ",round(train_loss[-1][-1],5),"",round(val_loss[-1][-1],5))
-        print("Remaining:", epochs-i)
+        print("Train & Validation loss: ",round(train_loss[-1][-1],5),"",round(val_loss[-1][-1],5)," Remaining:", epochs-i)
         
     
     fig = plt.figure(1)
@@ -157,7 +163,7 @@ def simulation(real_ys,predicted_ys,stock_names,n):
     subplot_n = int(np.sqrt(len(stock_names)))
     for index, name in enumerate(stock_names):
         MONEY = 1000000
-        OWNED_STOCKS = 0  
+        OWNED_STOCKS = 0
     
         money_timeline = []
         for i in range(len(real_ys[index])-n):
@@ -188,8 +194,8 @@ def main():
     predicted_ys = []
     model = ""
     
-    print("Stock price prediction application.")
-    print("'\033[93m'ATTENTION: Model estimates are based on historical graph data and can't make high accurate predictions. Do not use for investments.\n")
+    print("\n\nStock price prediction application.")
+    print("\nATTENTION: Model estimates are based on historical graph data and can't make high accurate predictions. Do not use for investments.\n")
 
     print("To use the application, you first need training data. For this, you need to enter the stock codes. After training, the program will restart. You must enter different stock codes and dates for the test. In this way, you can visualize to see model predictions.")
     print("More training data provides stronger model.")
@@ -201,6 +207,7 @@ def main():
             print("          2: Train model")
             print("          3: Show predictions for existing stocks")
             print("          4: Show model investing simulation on existing stocks")
+            print("          5: Exit")
             
         choose = input("\nChoose any command:")
         if(choose == "1"):
@@ -220,6 +227,8 @@ def main():
                 print("Model predicts is not initialized.")
             else:
                 simulation(real_ys, predicted_ys, stock_names, n)
+        elif(choose == "5" or choose == "exit"):
+            exit()
         
 if __name__ == "__main__":
     main()
